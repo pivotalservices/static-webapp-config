@@ -1,7 +1,14 @@
 #!/bin/bash
 
-# with jq 1.4 or later (like we're likely stuck on 1.3)
-# jq -n env > config.json
+function config {
+python - <<END
+import json, os;
+env = dict(os.environ)
+vars = [ "MY_CONFIG_VAR0", "MY_CONFIG_VAR1" ]
+filtered = { var: env[var] for var in vars }
+print(json.dumps(filtered))
+END
+}
 
-# with python
-python -c 'import json, os;print(json.dumps(dict(os.environ)))' > ./public/config.json
+OUTPUT=$(config)
+echo $OUTPUT > ./public/config.json
